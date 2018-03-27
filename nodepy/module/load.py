@@ -1,0 +1,1 @@
+print ("I come from load")
