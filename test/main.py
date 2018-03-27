@@ -1,13 +1,4 @@
-try:
-    import nodepy
-except:
-    import sys
-    sys.path.append("..")
-    try:
-        import nodepy
-    except:
-        print("Can't import nodepy")
-        sys.exit()
+import init#每个测试例 都要 import init
 
 # import moudle2.load
 from nodepy.will import WillbeCover,WillbeCover2
