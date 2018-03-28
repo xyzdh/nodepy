@@ -11,6 +11,9 @@ eg:
 
 '''
 
+
+
+
 __all__ = ('Layout', )
 
 from kivy.clock import Clock
@@ -34,7 +37,6 @@ class Layout(Widget):
 
     def do_layout(self, *largs, **kwargs):
         # optimize layout by preventing looking at the same attribute in a loop
-        print (self.size,666)
         w, h = self.size
         x, y = self.pos
 
@@ -45,17 +47,17 @@ class Layout(Widget):
 
             x_hint,y_hint = c.pos_hint
             c.x = x + x_hint * w
-            c.y = y + (1-shh-y_hint) * h
+            c.y = y + (1-shh-y_hint) * h# 打了 window_patch 后，貌似 不需要 1- 了,减不减 都一样？？？(1-shh-y_hint)
+        # print (c.pos,'SSS')
+
 
     def add_widget(self, widget, index=0):
         fbind = widget.fbind
-        print(11231)
         fbind('pos_hint', self._trigger_layout)
         fbind('size_hint', self._trigger_layout)
         return super(Layout, self).add_widget(widget, index)
 
     def remove_widget(self, widget):
-        print(6565)
         funbind = widget.funbind
         fbind('pos_hint', self._trigger_layout)
         fbind('size_hint', self._trigger_layout)
