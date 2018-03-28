@@ -1,21 +1,18 @@
 import init#每个测试例 都要 import init
 
-# import moudle2.load
-from nodepy.will import WillbeCover,WillbeCover2
-def run(self):
-    print("I'm a pathch")
+#测试 打过motionevent_patch后，touch_pos 的 坐标系原点 是否 变为 左上角
+from kivy.app import App
+from kivy.uix.label import Label
 
-def run2(self,**kwargs):
-    print("I'm a pathch too~~~~~~~~")
+class testLabel(Label):
+    def on_touch_down(self,touch):
+        self.text = str(touch.pos)
 
-##测试 用 新方法 覆盖 类 的 原始方法
-WillbeCover.run = run
+class test(App):
 
-WillbeCover2.run2 = run2
+    def build(self):
+        rootNode = testLabel(text = "Hello World")
+        return rootNode
 
-print(WillbeCover2.myattr)
-
-##把 类 的 属性 删掉
-delattr(WillbeCover2, 'myattr')
-
-from nodepy import test2
+if __name__ == "__main__":
+    test().run()
