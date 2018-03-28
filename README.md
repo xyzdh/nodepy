@@ -1,6 +1,8 @@
 # nodepy
 ##状态
-        脚手架 状态，暂不可用(暂时不往 master中合并)
+        脚手架 状态，暂不可用(暂时不往 master中合并).
+        目前主要使用分支：
+            Branch:dev&learn
 ## 基本描述
     
         目标 是 做 一个 自己 用着 顺手，适合 新手 的 python GUI框架(参照kivy)
