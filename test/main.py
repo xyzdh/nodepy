@@ -14,11 +14,13 @@ from nodepy.layout import Layout
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
+from kivy.core.window import Window
 class test(App):
 
     def move(self,instance,pos):
         # self.button.pos_hint_y += 0.01
-        print (self.smallLayout.pos,66666)
+        # print (self.smallLayout.pos,self.smallLayout.size,self.smallLayout.right,self.smallLayout.top)
+        print (Window.height,type(Window.size))
         pass
 
     def build(self):

@@ -48,6 +48,11 @@ class Layout(Widget):
             x_hint,y_hint = c.pos_hint
             c.x = x + x_hint * w
             c.y = y + (1-shh-y_hint) * h# 打了 window_patch 后，貌似 不需要 1- 了,减不减 都一样？？？(1-shh-y_hint)
+
+            # c.left = c.x
+            # c.right = c.left + c.width
+            # c.bottom = y + y_hint * h
+            # c.top = c.bottom + c.height
         # print (c.pos,'SSS')
 
 

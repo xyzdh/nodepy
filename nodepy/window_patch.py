@@ -14,8 +14,11 @@ def update_childsize(self, childs=None):
         w.x = x_hint * width
         # print (1-shh-y_hint)
         w.y = y_hint * height #在 控件 添加 到 layout中 时 (1-shh-y_hint) 或 y_hint 效果无区别
-        print (w.pos,888)
-
+        # print (w.pos,888)
+        # w.left = w.x
+        # w.right = w.left + w.width
+        # w.bottom = y_hint * height
+        # w.top = w.bottom + w.height
 
 
 
