@@ -1,0 +1,74 @@
+Module(
+body=[
+Expr(value=Str(s='\ncondition条件函数,只支持 参数 _value,_old_value\nfor example:\n    def first_condition(_value,_old_value):\n        if _value > _old_value:\n            return True\nor example:\n    def first_condition():\n        if 2 > 1:\n            return True                \n')), 
+ImportFrom(module='types', names=[alias(name='FunctionType', asname=None), alias(name='MethodType', asname=None)], level=0), 
+ImportFrom(module='copy', names=[alias(name='deepcopy', asname=None)], level=0), 
+ClassDef
+(
+name='A4', bases=[], keywords=[], body=[Pass()], decorator_list=[]
+), 
+ClassDef
+(
+name='Bind', 
+bases=[], 
+keywords=[], 
+body=[
+Assign(targets=[Name(id='__old_value', ctx=Store())], value=NameConstant(value=None)), 
+Assign(targets=[Name(id='__callback', ctx=Store())], value=List(elts=[], ctx=Load())), 
+Assign(targets=[Name(id='__condition', ctx=Store())], value=List(elts=[], ctx=Load())), 
+FunctionDef
+(
+name='__init__', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='value', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[NameConstant(value=None)]), 
+body=
+[
+Assign
+(
+targets=[Attribute(value=Name(id='self', ctx=Load()), attr='__value', ctx=Store())], value=Name(id='value', ctx=Load())
+)
+], 
+decorator_list=[], 
+returns=None
+), 
+FunctionDef
+(
+name='aa', args=arguments(args=[arg(arg='self', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[Pass()], decorator_list=[], returns=None
+), 
+FunctionDef
+(
+name='__value_change_call', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='value', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[If(test=Compare(left=Name(id='value', ctx=Load()), ops=[Eq()], comparators=[Attribute(value=Name(id='self', ctx=Load()), attr='__old_value', ctx=Load())]), body=[Return(value=None)], orelse=[]), 
+Assign
+(
+targets=[Name(id='old_value', ctx=Store())], 
+value=Call(func=Name(id='deepcopy', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='__old_value', ctx=Load())], keywords=[])
+), 
+Assign(targets=[Attribute(value=Name(id='self', ctx=Load()), attr='__old_value', ctx=Store())], value=Call(func=Name(id='deepcopy', ctx=Load()), args=[Name(id='value', ctx=Load())], keywords=[])), For(target=Tuple(elts=[Name(id='index', ctx=Store()), Name(id='condition', ctx=Store())], ctx=Store()), iter=Call(func=Name(id='enumerate', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='__condition', ctx=Load())], keywords=[]), body=[Try(body=[
+Assign(targets=[Name(id='run_call', ctx=Store())], value=BoolOp(op=Or(), values=[Compare(left=Name(id='condition', ctx=Load()), ops=[Is()], comparators=[NameConstant(value=None)]), Call(func=Name(id='condition', ctx=Load()), args=[Name(id='value', ctx=Load()), Name(id='old_value', ctx=Load())], keywords=[])]))], handlers=[ExceptHandler(type=None, name=None, body=[
+Assign(targets=[Name(id='run_call', ctx=Store())], value=BoolOp(op=Or(), values=[Compare(left=Name(id='condition', ctx=Load()), ops=[Is()], comparators=[NameConstant(value=None)]), Call(func=Name(id='condition', ctx=Load()), args=[], keywords=[])]))])], orelse=[], finalbody=[]), If(test=Name(id='run_call', ctx=Load()), body=[Try(body=[Expr(value=Call(func=Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='__callback', ctx=Load()), slice=Index(value=Name(id='index', ctx=Load())), ctx=Load()), args=[Name(id='value', ctx=Load()), Name(id='old_value', ctx=Load())], keywords=[]))], handlers=[ExceptHandler(type=None, name=None, body=[Expr(value=Call(func=Subscript(value=Attribute(value=Name(id='self', ctx=Load()), attr='__callback', ctx=Load()), slice=Index(value=Name(id='index', ctx=Load())), ctx=Load()), args=[], keywords=[]))])], orelse=[], finalbody=[])], orelse=[])], orelse=[])], decorator_list=[], returns=None
+), FunctionDef(name='__call__', args=arguments(args=[arg(arg='self', annotation=None)], vararg=arg(arg='args', annotation=None), kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[If(test=Compare(left=Name(id='args', ctx=Load()), ops=[Eq()], comparators=[Tuple(elts=[], ctx=Load())]), body=[Return(value=Attribute(value=Name(id='self', ctx=Load()), attr='__value', ctx=Load()))], orelse=[]), If(test=Compare(left=Call(func=Name(id='len', ctx=Load()), args=[Name(id='args', ctx=Load())], keywords=[]), ops=[Eq()], comparators=[Num(n=1)]), body=[
+Assign(targets=[Attribute(value=Name(id='self', ctx=Load()), attr='__value', ctx=Store())], value=Subscript(value=Name(id='args', ctx=Load()), slice=Index(value=Num(n=0)), ctx=Load())), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='__value_change_call', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='__value', ctx=Load())], keywords=[])), Return(value=None)], orelse=[]), Raise(exc=Call(func=Name(id='TypeError', ctx=Load()), args=[BinOp(left=Str(s='takes 1 positional arguments but %d were given'), op=Mod(), right=Call(func=Name(id='len', ctx=Load()), args=[Name(id='args', ctx=Load())], keywords=[]))], keywords=[]), cause=None)], decorator_list=[], returns=None), FunctionDef(name='__check', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='obj', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[If(test=Compare(left=Call(func=Name(id='type', ctx=Load()), args=[Name(id='obj', ctx=Load())], keywords=[]), ops=[In()], comparators=[List(elts=[Name(id='FunctionType', ctx=Load()), Name(id='MethodType', ctx=Load())], ctx=Load())]), body=[Return(value=NameConstant(value=True))], orelse=[])], decorator_list=[], returns=None), FunctionDef(name='bind', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='call', annotation=None), arg(arg='ifs', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[NameConstant(value=None)]), 
+body=
+[
+If
+(test=UnaryOp(op=Not(), operand=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='__check', ctx=Load()), args=[Name(id='call', ctx=Load())], keywords=[])), 
+body=
+[
+Raise(exc=Call(func=Name(id='TypeError', ctx=Load()), args=[Str(s='can not call')], keywords=[]), cause=None)
+], orelse=[]
+), 
+If(test=BoolOp(op=And(), values=[Compare(left=Name(id='ifs', ctx=Load()), ops=[NotEq()], comparators=[NameConstant(value=None)]), UnaryOp(op=Not(), operand=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='__check', ctx=Load()), args=[Name(id='ifs', ctx=Load())], keywords=[]))]), body=[Raise(exc=Call(func=Name(id='TypeError', ctx=Load()), args=[Str(s='can not call')], keywords=[]), cause=None)], orelse=[]), Expr(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='__callback', ctx=Load()), attr='append', ctx=Load()), args=[Name(id='call', ctx=Load())], keywords=[])), Expr(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='__condition', ctx=Load()), attr='append', ctx=Load()), args=[Name(id='ifs', ctx=Load())], keywords=[]))
+], 
+decorator_list=[], returns=None)], decorator_list=[]), 
+If(test=Compare(left=Name(id='__name__', ctx=Load()), ops=[Eq()], comparators=[Str(s='__main__')]), body=[ClassDef(name='TEST', bases=[], keywords=[], body=[FunctionDef(name='__init__', args=arguments(args=[arg(arg='self', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[
+Assign(targets=[Attribute(value=Name(id='self', ctx=Load()), attr='var', ctx=Store())], value=Call(func=Name(id='Bind', ctx=Load()), args=[], keywords=[])), Expr(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='var', ctx=Load()), attr='bind', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='call_with_value', ctx=Load())], keywords=[])), Expr(value=Call(func=Attribute(value=Attribute(value=Name(id='self', ctx=Load()), attr='var', ctx=Load()), attr='bind', ctx=Load()), args=[Attribute(value=Name(id='self', ctx=Load()), attr='call_no_value', ctx=Load()), Attribute(value=Name(id='self', ctx=Load()), attr='condition', ctx=Load())], keywords=[]))], decorator_list=[], returns=None), FunctionDef(name='call_with_value', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='_value', annotation=None), arg(arg='_old_value', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Str(s='--------\n'), Str(s="I'm a Method and use args-value\n"), Name(id='_value', ctx=Load()), Str(s='\n'), Name(id='_old_value', ctx=Load())], keywords=[]))], decorator_list=[], returns=None), FunctionDef(name='call_no_value', args=arguments(args=[arg(arg='self', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Str(s='--------\n'), Str(s="I'm a Method and no args-value")], keywords=[]))], decorator_list=[], returns=None), FunctionDef(name='condition', args=arguments(args=[arg(arg='self', annotation=None), arg(arg='_value', annotation=None), arg(arg='_old_value', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[If(test=Compare(left=Name(id='_old_value', ctx=Load()), ops=[NotEq()], comparators=[NameConstant(value=None)]), body=[Return(value=NameConstant(value=True))], orelse=[])], decorator_list=[], returns=None)], decorator_list=[]), 
+Assign
+(targets=[Name(id='test', ctx=Store())], value=Call(func=Name(id='Bind', ctx=Load()), args=[List(elts=[Num(n=666), Num(n=2333)], ctx=Load())], keywords=[])
+), 
+FunctionDef(name='callme', args=arguments(args=[arg(arg='_value', annotation=None), arg(arg='_old_value', annotation=None)], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]), body=[Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Str(s='hi,hi'), Name(id='_value', ctx=Load()), Name(id='_old_value', ctx=Load())], keywords=[]))], decorator_list=[], returns=None), Expr(value=Call(func=Attribute(value=Name(id='test', ctx=Load()), attr='bind', ctx=Load()), args=[Name(id='callme', ctx=Load())], keywords=[])), 
+
+Assign
+(
+targets=[Subscript(value=Call(func=Name(id='test', ctx=Load()), args=[], keywords=[]), slice=Index(value=Num(n=0)), ctx=Store())], value=Str(s='WWWWWW')
+), 
+Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Subscript(value=Call(func=Name(id='test', ctx=Load()), args=[], keywords=[]), slice=Index(value=Num(n=0)), ctx=Load()), Num(n=222222)], keywords=[]))], orelse=[])
+])
+>>> 
