@@ -1,3 +1,4 @@
+#糟糕的实现，无法 对 深层的 变化 引起 的 整体 变化 作出相应。弃用
 '''var = Bind()
 当 对象 的 值 改变时，作出 反应。
 When the value of Object is changed,do something.'''
@@ -33,124 +34,115 @@ eg:
 from types import FunctionType, MethodType
 from ast import parse, walk, Name
 from copy import deepcopy
+from re import finditer
 from sys import _getframe
 from codecs import open
 
 
 class Bind():
-    __slots__ = {'__value', 'cache', '__old_value',
-                 '__callback', '__condition', '__cache', '_temp'}
 
     def __init__(self, value=None, cache=True):
-        self.__value = value
-        self.cache = cache #设置 是否 缓存 调用行 的 相关内容
-        self.__old_value = None
-        self.__callback = []
-        self.__condition = []
-        self.__cache = {}
-        self._temp = None
+        self.__dict__ = {'_Bind__value': value, '_Bind__old_value': None,
+                         '_Bind__callback': [], '_Bind__condition': [], '_Bind__cache': {}}
+        self.__setattr__ = self.__setitem__
 
-    def __value_change_call(self, value):
-        if value == self.__old_value:
-            return
+    def __getattr__(self, name):
+        print(46546,name,88888888)
+        return eval("self.__dict__['_Bind__value']."+name)
 
-        v = {'value': value, 'old_value': self.__old_value}
-        for index, condition in enumerate(self.__condition):
-            run_call = (condition is None or condition(**v))
+    def __getitem__(self, name):
+        return self.__dict__['_Bind__value'][name]
+        # eval('self.__value['+name+']')
 
-            if run_call:
-                self.__callback[index](**v)
-
-        self.__old_value = deepcopy(value)
-
-    def __call__(self, *args):
-        num = len(args)
-        if num == 1:
-            self.__value = args[0]
-            self.__value_change_call(self.__value)
-            return
-        elif num > 0:
-            raise TypeError(
-                "takes 1 positional arguments but %d were given" % len(args))
+    def __setitem__(self, name, value):
 
         frame = _getframe()
         filename = frame.f_back.f_code.co_filename
         lineno = frame.f_back.f_lineno
-        self._temp = deepcopy(self.__value)
 
-        try:
-            if not self.cache:
-                raise
-            source, var = self.__cache[filename][lineno]
-        except:
-            if not self.__cache.get(filename):
-                self.__cache[filename] = {}
+        _local = frame.f_back.f_locals
+        _global = frame.f_back.f_globals
+        var = {}
+    
+        with open(filename, "r", encoding='UTF-8') as file:
+            source = file.readlines()[lineno - 1]
+            source = "".join(source.split())#去除空格,换行符,制表符
 
-            _local = frame.f_back.f_locals
-            _global = frame.f_back.f_globals
-            var = {}
+            if source[-1] != ':':  # 说明不是 if/while/for…… 之类
+                nodes = parse(source)
 
-            with open(filename, "r", encoding='UTF-8') as file:
-                source = file.readlines()[lineno - 1]
-                source = source.replace("\r\n", "").replace("\n", "")
+                for node in walk(nodes):
+                    if isinstance(node, Name):
+                        _id = node.id
 
-                if source[-1] != ':':  # 说明不是 if/while/for…… 之类
-                    source = source.replace(' ', "").replace("\t", "")
-                    nodes = parse(source)
-                    # 首先 找出 所有 ) 右括号 的 位置,用于 模糊定位 函数位置
-                    r_p = []  # Right parenthesis
-                    for index, value in enumerate(source):
-                        if value == ')':
-                            r_p.append(index)
+                        if var.get(_id):  # 不重复处理相同的name
+                            continue
 
-                    for node in walk(nodes):
-                        if isinstance(node, Name):
-                            _id = node.id
+                        try:
+                            var[_id] = _local[_id]
+                        except:
+                            var[_id] = _global[_id]
 
-                            if var.get(_id):  # 不重复处理相同的name
-                                continue
 
-                            try:
-                                var[_id] = _local[_id]
-                            except:
-                                try:
-                                    var[_id] = _global[_id]
-                                except:  # __builtins__
-                                    if _id == 'print':
-                                        return self._temp
+                        exclude = []#剔除 字符串
+                        for w in ['"(.+?)"',"'(.+?)'"]:
+                            exclude += [[m.start(),m.end()] for m in finditer(w, source)]
 
-                            start, add_len = 0, 0
-                            while 1:
-                                start = source.find(_id, start)
-                                if start == -1:
-                                    break
-                                for index, pos in enumerate(r_p[:]):
-                                    if pos < start:
-                                        continue
-                                    end = pos - 1
-                                    ext = source[start + len(_id):end]
-                                    try:
-                                        if isinstance(eval('var[_id]' + ext), Bind):
-                                            if source[end] == '(':
-                                                source = source[
-                                                    :end] + "._Bind__value" + source[end + 2:]
-                                                we = source[
-                                                    :end] + "._Bind__value" + source[end + 2:]
-                                                r_p.remove(pos)
-                                                for i in range(index, len(r_p)):
-                                                    r_p[i] += 13 - 2
-                                    except:
-                                        pass
-                                start += len(_id)
+                        start,length =  0,len(_id)
+                        inside = lambda x,y:y[0]<=x<=y[1]
+                        while 1:
+                            start = source.find(_id, start)
+                            if start == -1:
+                                break
 
-            if self.cache:
-                self.__cache[filename][lineno] = [source, var]
-
+                            t = start+length
+                            if all([not inside(start, r) for r in exclude]):
+                                    source = source[:t]+".__dict__['_Bind__value']"+source[t:]
+                            start = t
+        print(source,2222222)
         exec(source, {}, var)
+        # self.__dict__['_Bind__value'][name] = value
+        self.__value_change_call()
 
-        self.__value_change_call(self.__value)
+    # __setattr__ = __setitem__
+    # # def __delitem__(self,key):
+    # def __delitem__(self,key):
+    #     print(key,6546546)
+    def __value_change_call(self):
+        value = self.__dict__['_Bind__value']
+        old_value = self.__dict__['_Bind__old_value']
+        if value == old_value:
+            return
 
-        return self._temp
+        v = {'value': value, 'old_value': old_value}
+        for index, condition in enumerate(self.__dict__['_Bind__condition']):
+            run_call = (condition is None or condition(**v))
+
+            if run_call:
+                self.__dict__['_Bind__callback'][index](**v)
+
+        self.__dict__['_Bind__old_value'] = deepcopy(value)
+
+    def __call__(self, *args):
+        # print(self.__dict__)
+        num = len(args)
+        if num == 0:
+            return self.__dict__['_Bind__value']  
+
+        if num == 1:
+            # print('22222222')
+            self.__dict__['_Bind__value'] = args[0]
+            self.__value_change_call()
+            return
+
+        if num > 0:
+            raise TypeError(
+                "takes 1 positional arguments but %d were given" % len(args))
+
+    def __str__(self):
+        return str(self.__dict__['_Bind__value'])
+
+    __repr__ = __str__
 
     def __check(self, obj):
         # 只 允许 '函数' 和 '方法'
@@ -162,17 +154,64 @@ class Bind():
             raise TypeError("can not call")
         if ifs != None and not self.__check(ifs):
             raise TypeError("can not call")
-        if call not in self.__callback:  # 相同 的 call 只会 绑定一次
-            self.__callback.append(call)
-            self.__condition.append(ifs)
+        if call not in self.__dict__['_Bind__callback']:  # 相同 的 call 只会 绑定一次
+            self.__dict__['_Bind__callback'].append(call)
+            self.__dict__['_Bind__condition'].append(ifs)
 
     def unbind(self, call):
         if not self.__check(call):
             raise TypeError("can not call")
         try:
-            index = self.__callback.index(call)
-            del self.__callback[index]
-            del self.__condition[index]
+            index = self.__dict__['_Bind__callback'].index(call)
+            del self.__dict__['_Bind__callback'][index]
+            del self.__dict__['_Bind__condition'][index]
         except ValueError:
             raise 'unbind fail.The call is not a Bind callback'
 
+test = Bind()
+
+
+def call(value, old_value):
+    print(old_value, '---old')
+
+
+def condition(value, old_value):
+    if isinstance(value, int) and value > 6:
+        print('will not trigger call,value == ', value)
+        return False
+    return True
+
+test.bind(call,condition)
+
+test([1, [2,3]])  # test() == 6 #None ---old
+test[1] = 6
+print(test) 
+
+# class AA():
+#     wow = 6
+# test(AA)
+# test.wow = 7
+# print(test.wow)
+
+# print(test[-1])
+# test[1] = 3
+# print(test)
+# c = [12,3]
+# # del test[1],c[1]
+# # print(test,c)
+# test[1] = [5,6]
+# test[1][0] = 8
+# print(test)
+# if test == [1,3]:
+#     print(56465)
+# test(7) # test() == 7
+
+# test([1,2,3])# test() == 123 #6 ---old
+# test()[1] = 6 # test() == [1,6,3] #[1, 2, 3] ---old
+
+# test.unbind(call) # unbind Callback & its Condition
+
+# test('nothing will print')
+
+# print(test())
+# print(test._Bind__value)
