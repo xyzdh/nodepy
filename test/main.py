@@ -1,25 +1,14 @@
-import init
-from nodepy.bind import Bind
-
-if __name__ == '__main__':
-    def callback_two(value, old_value):
-        print("--------\n", "I'm a static method\n",
-              value, "\n", old_value)
-    class TEST():
-
-        def __init__(self):
-            self.var = Bind()
-            self.var.bind(self.callback_one)
-            self.var.bind(callback_two)
-
-        def callback_one(self, value, old_value):
-            print("--------\n", "I'm a normal method\n",
-                  value, "\n", old_value)
-
-        def condition(self, value, old_value):
-            if old_value != None:
-                return True
-
-    test = TEST()
-
-    test.var("will call <self.call_no_value>")
+import inspect
+import sys
+print(inspect.stack(3))#保证 3 可以获取 到 下一行,当前行在中间，然后 总共 获取 三行源码
+print(11111)
+print (sys._getframe(0).f_code.co_name)
+print(4)
+print(inspect.getframeinfo(inspect.currentframe()))
+import linecache
+# print(linecache.cache[filename])
+t =  list(linecache.cache[filename])
+t[2][-1] = 'print(23333333333)\n'
+linecache.cache[filename] = t
+print(linecache.cache[filename])
+print(666)
